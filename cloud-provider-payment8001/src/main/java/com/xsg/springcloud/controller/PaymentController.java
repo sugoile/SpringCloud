@@ -6,7 +6,11 @@ import com.xsg.springcloud.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @des:
@@ -19,6 +23,9 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private DiscoveryClient discoveryClient;
 
     @Value("${server.port}")
     private String Server;
@@ -47,5 +54,24 @@ public class PaymentController {
         }else{
             return new CommonResult(444,"没有对应记录,查询ID: "+id,null);
         }
+    }
+
+
+    /**
+     * 服务发现，用于简介该controller的一些简介信息
+     * services 返回所有的服务类型 ("CLOUD-ORDER-SERVICE", "CLOUD-PAYMENT-SERVICE")
+     * instances 通过传入某一service的id来返回 接口、主机等信息
+     */
+    @GetMapping(value = "/payment/discoveryClient")
+    public Object discoveryClient(){
+        List<String> services = discoveryClient.getServices();
+        for (String service : services){
+                log.info("\"" + service + "\" ");
+        }
+        List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PAYMENT-SERVICE");
+        for (ServiceInstance instance : instances){
+            log.info(instance.getServiceId() + "\t" + instance.getPort() + "\t" + instance.getUri());
+        }
+        return this.discoveryClient;
     }
 }
