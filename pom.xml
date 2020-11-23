@@ -20,6 +20,7 @@
         <module>cloud-consumerZK-order80</module>
         <module>cloud-providerConsul-payment8004</module>
         <module>cloud-consumerConsul-order80</module>
+        <module>cloud-consumerOpenFeign-order80</module>
     </modules>
 
 
