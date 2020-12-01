@@ -24,6 +24,7 @@
         <module>cloud-providerHystrix-payment8001</module>
         <module>cloud-consumerFeignHystrix-order80</module>
         <module>cloud-consumerHystrix-Dashboard9001</module>
+        <module>cloud-gateway-gateway9527</module>
     </modules>
 
 
@@ -54,7 +55,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Hoxton.SR8</version>
+                <version>Hoxton.SR1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
