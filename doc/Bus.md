@@ -3,6 +3,7 @@
 > 引文地址：https://www.cnblogs.com/babycomeon/p/11141160.html
 
 ##### 1.简介
+
 Spring cloud bus通过轻量消息代理连接各个分布的节点。这会用在广播状态的变化（例如配置变化）或者其他的消息指令。Spring bus的一个核心思想是通过分布式的启动器对spring boot应用进行扩展，也可以用来建立一个多个应用之间的通信频道。目前唯一实现的方式是用AMQP消息代理作为通道，同样特性的设置（有些取决于通道的设置）在更多通道的文档中。
 
 大家可以将它理解为管理和传播所有分布式项目中的消息既可，其实本质是利用了MQ的广播机制在分布式的系统中传播消息，目前常用的有Kafka和RabbitMQ。利用bus的机制可以做很多的事情，其中配置中心客户端刷新就是典型的应用场景之一，我们用一张图来描述bus在配置中心使用的机制。
@@ -128,9 +129,9 @@ Spring cloud bus通过轻量消息代理连接各个分布的节点。这会用�
 
   ```
   <dependency>
-           <groupId>org.springframework.cloud</groupId>
-           <artifactId>spring-cloud-starter-bus-amqp</artifactId>
-       </dependency>
+    <groupId>org.springframework.cloud</groupId>
+     <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+  </dependency>
   ```
 
 + 配置application.yml
@@ -149,8 +150,8 @@ Spring cloud bus通过轻量消息代理连接各个分布的节点。这会用�
             default-label: main                     #默认读取分支
             username: github账号
             password: github密码
-      # 开启消息跟踪
-      bus:``
+      #开启消息跟踪
+      bus:
         trace:
           enabled: true
   
