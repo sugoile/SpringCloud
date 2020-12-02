@@ -11,6 +11,17 @@ spring:
           default-label: main                     #默认读取分支
           username: github账号
           password: github密码
+    # 开启消息跟踪
+    bus:
+      trace:
+        enabled: true
+
+  #rabbitmq相关配置
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
 
 #服务注册到eureka地址
 eureka:
@@ -19,3 +30,10 @@ eureka:
       defaultZone: http://localhost:7001/eureka
     register-with-eureka: true
     fetch-registry: true
+
+#rabbitmq相关配置,暴露bus刷新配置的端点
+management:
+  endpoints: #暴露bus刷新配置的端点
+    web:
+      exposure:
+        include: 'bus-refresh'
