@@ -28,7 +28,7 @@
 
    + 添加依赖
 
-     ```java
+     ```
      <!--添加消息总线RabbitMQ支持-->
      <dependency>
          <groupId>org.springframework.cloud</groupId>
@@ -38,7 +38,7 @@
 
    + `yml`文件
 
-     ```java
+     ```
      #rabbitmq相关配置
      spring:
       rabbitmq:
@@ -63,44 +63,44 @@
 
      显示内容都为：
 
-     ```java
-   	config:
+     ```
+     config:
        	info: master branch,SpringCloud-Config-Test/config-dev.application version=2
      ```
-   
+
      现在我们更新github上的配置文件，将配置内容改为 
-     
-     ```java
+
+     ```
      master branch,SpringCloud-Config-Test/config-dev.application version=3
      ```
-     
+
      先访问http://localhost:3344/config-dev.yml，可以看到页面显示为:
-     
+
      ```
      master branch,SpringCloud-Config-Test/config-dev.application version=3
      ```
-     
+
       再访问http://localhost:3355/configInfo，http://localhost:3366/configInfo，可以看到页面依然显示为：
-     
+
      ```
      config:
           info: master branch,SpringCloud-Config-Test/config-dev.application version=2
      ```
-     
+
      我们对端口为8081的服务发送一个/actuator/bus-refresh的POST请求，在win10下使用下面命令来模拟webhook。
-     
+
      ```
      curl -X POST http://localhost:3355/actuator/bus-refresh		
      ```
-     
+
      **注意：** 在springboot2.x的版本中刷新路径为：`/actuator/bus-refresh`，在springboot1.5.x的版本中刷新为：`/bus/refresh`。
-     
-       		执行完成后，我们访问http://localhost:3355/configInfo，http://localhost:3366/configInfo，可以看到页面打印内容已经变为：
-     
+
+     执行完成后，我们访问http://localhost:3355/configInfo , http://localhost:3366/configInfo
+     可以看到页面打印内容已经变为：
      ```
      master branch,SpringCloud-Config-Test/config-dev.application version=3
      ```
-     
+
      这样说明，我们3344端口的服务已经把更新后的信息通过`rabbitmq`推送给了3355与3366端口的服务，这样我们就实现了图一中的示例。
 
  	
@@ -126,19 +126,19 @@
    5. 全部客户端均获取到最新的配置
 
    这样的话我们在server端的代码做一些改动，来支持/actuator/bus-refresh
-   
+
    + 添加依赖
-   
+
      ```
      <dependency>
               <groupId>org.springframework.cloud</groupId>
               <artifactId>spring-cloud-starter-bus-amqp</artifactId>
           </dependency>
      ```
-   
+
    + 配置application.yml
 
-     ```java
+     ```
      server:
        port: 3344
      
@@ -180,27 +180,27 @@
              include: 'bus-refresh'
      
      ```
-   
+
    + 测试
-   
+
      按照上面的测试方式，访问两个客户端测试均可以正确返回信息。同样修改配置文件，将值改为：
 
      ```
-    master branch,SpringCloud-Config-Test/config-dev.application version=4
+       master branch,SpringCloud-Config-Test/config-dev.application version=4
      ```
-   
+
      
 
      并提交到仓库中。在win10下使用下面命令来模拟webhook。
 
      ```
-  curl -X POST http://localhost:3344/actuator/bus-refresh
+     curl -X POST http://localhost:3344/actuator/bus-refresh
      ```
-   
+
      执行完成后，依次访问两个客户端，返回：
 
      ```
-   master branch,SpringCloud-Config-Test/config-dev.application version=4
+      master branch,SpringCloud-Config-Test/config-dev.application version=4
      ```
-   
+
      说明三个客户端均已经拿到了最新配置文件的信息，这样我们就实现了上图中的示例。
