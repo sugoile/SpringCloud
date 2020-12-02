@@ -175,26 +175,54 @@
 
      + 测试
 
-       + 修改version版本为2
+       + 修改version版本为2（github上的config-dev.yml）
 
-       ![image-20201202103231103](D:\markdown\image-20201202103231103.png)
+       ```java
+       config:
+         info: "master branch,SpringCloud-Config-Test/config-dev.application version=2"
+       ```
 
        + 刷新server端（成功获取到）
 
-         ![image-20201202103321435](C:\Users\XSG\AppData\Roaming\Typora\typora-user-images\image-20201202103321435.png)
+         http://localhost:3344/config-dev.yml
+
+         ```java
+         config:
+           info: master branch,SpringCloud-Config-Test/config-dev.application version=2
+         ```
 
        + 刷新两个客户端（没有获取到）
 
-         ![image-20201202103403649](D:\markdown\image-20201202103403649.png)
+         http://localhost:3355/configInfo
 
-       ​		 ![image-20201202104550194](D:\markdown\image-20201202104550194.png)
+         ```java
+         master branch,SpringCloud-Config-Test/config-dev.application version=1
+         ```
+
+         http://localhost:3366/configInfo
+
+          ```java
+         serverPort: 3366	configInfo: master branch,SpringCloud-Config-Test/config-dev.application version=1
+          ```
+
+         
 
        + 发送一个POST请求端口为3355（刷新两个接口，3355变化，3366无变化）
 
-         ![image-20201202103842342](D:\markdown\image-20201202103842342.png)
+         > curl -X POST "http://localhost:3355/actuator/refresh"
+         
+         http://localhost:3355/configInfo
 
-         ![image-20201202104925048](C:\Users\XSG\AppData\Roaming\Typora\typora-user-images\image-20201202104925048.png)
+         ```java
+         master branch,SpringCloud-Config-Test/config-dev.application version=2
+         ```
 
-         ![image-20201202104943897](C:\Users\XSG\AppData\Roaming\Typora\typora-user-images\image-20201202104943897.png)
+         http://localhost:3366/configInfo
+
+         ```java
+         serverPort: 3366	configInfo: master branch,SpringCloud-Config-Test/config-dev.application version=1
+         ```
+
+         
 
      ###### 这样虽然可以更新我们的client端的配置信息，不需要微服务重新启动，但是在client端微服务一旦多的情况下，会造使每次都要POST请求，不适于大量微服务的情况，我们也可以使用Spring Cloud Bus来广播进行解决微服务的大量请求。

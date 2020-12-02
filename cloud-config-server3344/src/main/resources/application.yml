@@ -9,8 +9,8 @@ spring:
           uri: https://github.com/sugoile/SpringCloud-Config-Test.git   #GitHub上面的git仓库名字
           search-paths: SpringCloud-Config-Test   #搜索目录
           default-label: main                     #默认读取分支
-          username: 160487079@qq.com
-          password: xsg19990916
+          username: github账号
+          password: github密码
 
 #服务注册到eureka地址
 eureka:
