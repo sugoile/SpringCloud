@@ -12,15 +12,15 @@
 
    根据此图我们可以看出利用Spring Cloud Bus做配置更新的步骤:
 
-   1. 提交代码触发post给客户端A发送bus/refresh
+   1.提交代码触发post给客户端A发送bus/refresh
 
-   2. 客户端A接收到请求从Server端更新配置并且发送给Spring Cloud Bus
+   2.客户端A接收到请求从Server端更新配置并且发送给Spring Cloud Bus
 
-   3. Spring Cloud bus接到消息并通知给其它客户端
+   3.Spring Cloud bus接到消息并通知给其它客户端
 
-   4. 其它客户端接收到通知，请求Server端获取最新配置
+   4.其它客户端接收到通知，请求Server端获取最新配置
 
-   5. 全部客户端均获取到最新的配置
+   5.全部客户端均获取到最新的配置
 
 2. ##### 示例
 
@@ -119,11 +119,11 @@
 
    这时Spring Cloud Bus做配置更新步骤如下:
 
-   1. 提交代码触发post给Server端发送bus/refresh
-   2. Server端接收到请求并发送给Spring Cloud Bus
-   3. Spring Cloud bus接到消息并通知给其它客户端
-   4. 其它客户端接收到通知，请求Server端获取最新配置
-   5. 全部客户端均获取到最新的配置
+   1.提交代码触发post给Server端发送bus/refresh
+   2.Server端接收到请求并发送给Spring Cloud Bus
+   3.Spring Cloud bus接到消息并通知给其它客户端
+   4.其它客户端接收到通知，请求Server端获取最新配置
+   5.全部客户端均获取到最新的配置
 
    这样的话我们在server端的代码做一些改动，来支持/actuator/bus-refresh
 
