@@ -306,3 +306,58 @@ Nacos 帮助您更敏捷和容易地构建、交付和管理微服务平台。 N
   >
   > https://www.jianshu.com/p/acb9b1093a54
 
+
+
+###### 5. Namespace，Group
+
+Namespace指命名空间，不同的Namespace是互相隔离的，如：开发，测试，生产环境
+
+Group指不同微服务可以放入同一个分组里面，默认分组是DEFAULT_GROUP
+
+实现不同Namespace，不同Group之间的配置查看
+
+ 每建一个Namespace就会有UUID输出
+
+group可以自己命名
+
+```yaml
+spring:
+  application:
+    name: nacos-config-client
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 #Nacos服务注册中心地址
+      config:
+        server-addr: localhost:8848 #Nacos作为配置中心地址
+        file-extension: yaml #指定yaml格式的配置
+        group: DEV_GROUP
+        namespace: 7d8f0f5a-6a53-4785-9686-dd460158e5d4
+```
+
+
+
+###### 6. 持久化到Mysql
+
+windows下数据信息持久化到mysql数据库，只需要在Nacos安装路径下的config文件夹中
+
+```
+#*************** Config Module Related Configurations ***************#
+### If use MySQL as datasource:
+# spring.datasource.platform=mysql
+
+### Count of DB:
+# db.num=1
+
+### Connect URL of DB:
+# db.url.0=jdbc:mysql://127.0.0.1:3306/nacos?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
+# db.user=nacos
+# db.password=nacos
+```
+
+将注解开启即可，数据库需要自己配置
+
+里面有nacos-mysql.sql导入新建的数据库即可实现持久化，每次一新建就会进入数据库中，保持数据的持久性。
+
+
+
