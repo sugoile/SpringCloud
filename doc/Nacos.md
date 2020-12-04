@@ -175,3 +175,134 @@ Nacos 帮助您更敏捷和容易地构建、交付和管理微服务平台。 N
   ```
 
   不管访问多少次，Nacos表示的负载均衡为轮询策略。
+
+
+
+###### 4.Nacos配置中心
+
+`Nacos`自带配置`server`端，不需要像`Config`那样自己书写`server`端，我们只需要把`client`注册进`Nacos`即可，也不需要连接github作为配置中心存储，`Nacos`自带了一个小型数据库`derby`，虽然能够作为数据库存储，但是在集群时，每一个`Nacos`都带有自己的数据库，会造成数据的存储混乱，且数据库不具有持久性，关闭了`Nacos`服务后就会失效，Nacos作为处理，加入了数据库作为持久性和集群的配置。
+
++ 配置client端，pom，yml，启动类
+
+  ```
+  <!--nacos-config-->
+  <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+  </dependency>
+  <!--nacos-discovery-->
+  <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+  </dependency>
+  ```
+
+  yml文件我们建立一个`boostrap.yml`和一个`application.yml`，这是因为`boostrap.yml`优于`application.yml`的加载，在配置中我们先放入`boostrap.yml`，而具体是哪一个开发环境在`application.yml`配置自由切换
+
+  `bootstrap.yml`:
+
+  ```yaml
+  # nacos配置
+  server:
+    port: 3377
+  
+  spring:
+    application:
+      name: nacos-config-client
+    cloud:
+      nacos:
+        discovery:
+          server-addr: localhost:8848 #Nacos服务注册中心地址
+        config:
+          server-addr: localhost:8848 #Nacos作为配置中心地址
+          file-extension: yaml #指定yaml格式的配置
+  
+  
+  # ${spring.application.name}-${spring.profile.active}.${spring.cloud.nacos.config.file-extension}
+  ```
+
+  application.yml :
+
+  ```yaml
+  #环境为dev.yml
+  spring:
+    profiles:
+      active: dev
+  ```
+
+  ```java
+  @EnableDiscoveryClient
+  @SpringBootApplication
+  public class NacosConfigClientMain3377
+  {
+      public static void main(String[] args) {
+          SpringApplication.run(NacosConfigClientMain3377.class, args);
+      }
+  }
+  ```
+
++ 配置controller端
+
+  ```java
+  @RestController
+  @RefreshScope       //支持Nacos的动态刷新功能。
+  public class ConfigClientController {
+      @Value("${config.info}")
+      private String configInfo;
+  
+      @GetMapping("/config/info")
+      public String getConfigInfo() {
+          return configInfo;
+      }
+  }
+  ```
+
++ 注意点
+
+  在 Nacos Spring Cloud 中，`dataId` 的完整格式如下：
+
+  ```plain
+  ${prefix}-${spring.profiles.active}.${file-extension}
+  ```
+
+  + `prefix` 默认为 `spring.application.name` 的值，也可以通过配置项 `spring.cloud.nacos.config.prefix`来配置。
+
+  - `spring.profiles.active` 即为当前环境对应的 profile，详情可以参考 [Spring Boot文档](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html#boot-features-profiles)。 **注意：当 `spring.profiles.active` 为空时，对应的连接符 `-` 也将不存在，dataId 的拼接格式变成 `${prefix}.${file-extension}`**
+  - `file-exetension` 为配置内容的数据格式，可以通过配置项 `spring.cloud.nacos.config.file-extension` 来配置。目前只支持 `properties` 和 `yaml` 类型。
+
+  `Nacos `的 `@RefreshScope` 不像`Config`一样需要发送一个推送请求post给sever端才能使client端的需要的`bootstrap.yml`更新，`Nacos`结合`Config`与`Bus`实现了不需要推送直接更新。
+
++ 测试
+
+  在Nacos中自己创建一个配置信息供测试，也可以远程自己配置信息
+
+  首先通过调用 [Nacos Open API](https://nacos.io/zh-cn/docs/open-api.html) 向 Nacos Server 发布配置：dataId 为`dev.yaml`，内容为`useLocalCache=true`
+
+  ```
+  curl -X POST "http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos-config-client-dev.yaml&group=DEFAULT_GROUP&content=useLocalCache=true"
+  ```
+
+  Data ID: nacos-config-client-dev.yaml
+
+  Group: DEFAULT_GROUP
+
+  访问http://localhost:3377/config/info显示：
+
+  ```
+  nacos-config-client-dev.yaml
+  ```
+
+  当我们修改/添加server端的YAML文档时，
+
+  再次刷新http://localhost:3377/config/info即可，显示：
+
+  ```
+  nacos-config-client-dev.yaml update
+  ```
+
++ Nacos配置实时刷新原理
+
+  > https://blog.csdn.net/c18298182575/article/details/102834106
+  >
+  > https://www.jianshu.com/p/acb9b1093a54
+

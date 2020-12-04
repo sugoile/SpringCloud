@@ -1,0 +1,5 @@
+
+#环境为dev.yml
+spring:
+  profiles:
+    active: dev
