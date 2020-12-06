@@ -361,3 +361,122 @@ windows下数据信息持久化到mysql数据库，只需要在Nacos安装路径
 
 
 
+###### 7. Nacos集群
+
+windows下配置`Nacos`集群，Linux版本可以采用`docker+nginx`来布置，这里我们采用Windows下`Nginx+Nacos`
+
+>https://blog.csdn.net/qq_36481052/article/details/106187956
+>
+>https://www.cnblogs.com/jiangwangxiang/p/8481661.html
+>
+>https://blog.csdn.net/qq_41243646/article/details/107521034
+
++ 配置好Nginx后，将`nacos-mysql.sql`导入数据库，形成集群持久化
+
++ 在 Nacos 安装目录下的`conf\application.properties` 文件最后面添加数据库相关配置
+
+  ```
+  spring.datasource.platform = mysql 
+  db.num = 1 
+  db.url.0 = jdbc:mysql://127.0.0.1:3306/nacos-config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true 
+  db.user=root 
+  db.password=123456
+  ```
+
++ 将Nacos的安装夹复制三个指三个集群，修改`conf\application.properties`
+
+  ```
+  将:
+  server.port=8848(文件名后面的的端口号)
+  server.port=8858
+  server.port=8868
+  ```
+
+  新增:`\conf\cluster.conf`
+
+  ```
+  #这里是三个集群号
+  IP查看可以用ipconfig命令
+  
+  (IP:Port) 此处的IP就是自己本机的ipconfig
+  192.168.190.232:8848
+  192.168.190.232:8858
+  192.168.190.232:8868
+  ```
+
++ 由于最新版默认是集群方式启动，所以不需要更改startup.cmd的默认启动方式
+
++ 修改`nginx-1.18.0\conf\nginx.conf`
+
+  ```
+  upstream nacos{
+          server 127.0.0.1:8848;
+          server 127.0.0.1:8858;
+          server 127.0.0.1:8868;
+          }
+  location / {
+           proxy_pass http://nacos/;
+          }
+          
+  #修改nginx的端口号
+  upstream nacos{
+          server 127.0.0.1:8848;
+          server 127.0.0.1:8858;
+          server 127.0.0.1:8868;
+          }
+      server {
+          listen       1111;
+          server_name  localhost;
+  
+          #charset koi8-r;
+  
+          #access_log  logs/host.access.log  main;
+  
+          location / {
+              #root   html;
+              #index  index.html index.htm;
+  	proxy_pass http://nacos;
+          }
+          
+    ##更改需要完全杀死nginx进程在重启
+    netstat -ano | findstr "端口号"
+    tasklist | findstr "pid"  #查看是否存在nginx.exe
+    taskkill /f /t /im nginx.exe
+  ```
+
++ 更改注册进`Nacos`的微服务的`application.yml`（以9002作为测试用例）
+
+  ```yaml
+  server:
+    port: 9002
+  
+  spring:
+    application:
+      name: nacos-payment-provider
+    cloud:
+      nacos:
+        discovery:
+          #server-addr: localhost:8848 #配置Nacos地址
+          # 换成nginx的1111端口，做集群
+          server-addr: 127.0.0.1:1111
+  ```
+
++ 启动
+
+  分别启动8848、8858、8868集群的startup.cmd
+
+  启动`nginx nginx-1.18.0\nginx.exe`
+
+  访问
+
+  ```
+  http://127.0.0.1:1111/nacos/
+  #这里是我们布置的通过nginx作为访问nacos集群，后面就可以看到
+  10.86.5.150:8848
+  10.86.5.150:8858
+  10.86.5.150:8868
+  三个作为一个集群
+  服务管理中也有9002注册者注入
+  ```
+
+  
