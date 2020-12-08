@@ -11,6 +11,7 @@ spring:
     sentinel:
       transport:
         dashboard: localhost:8080 #配置Sentinel dashboard地址
+<<<<<<< HEAD
         port: 8719                #在哪个端口开启监控
       datasource:
         ds1:
@@ -20,3 +21,6 @@ spring:
             groupId: DEFAULT_GROUP
             data-type: json
             rule-type: flow
+=======
+        port: 8719                #在哪个端口开启监控
+>>>>>>> 136072e8de660f078c0b426f93922e8fa4fa1edd
