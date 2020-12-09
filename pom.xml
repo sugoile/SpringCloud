@@ -36,10 +36,10 @@
         <module>cloudalibaba-consumer-nacos-order83</module>
         <module>cloudalibaba-config-nacos-client3377</module>
         <module>cloudalibaba-sentinel-service8401</module>
-<<<<<<< HEAD
         <module>cloudalibaba-consumer-nacos-order84</module>
-=======
->>>>>>> 136072e8de660f078c0b426f93922e8fa4fa1edd
+        <module>seata-order-service2001</module>
+        <module>seata-storage-service2002</module>
+        <module>seata-account-service2003</module>
     </modules>
 
 
@@ -129,7 +129,6 @@
                     <addResources>true</addResources>
                 </configuration>
             </plugin>
-<<<<<<< HEAD
             <plugin>
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
                 <groupId>org.apache.maven.plugins</groupId>
@@ -140,8 +139,6 @@
                     <target>8</target>
                 </configuration>
             </plugin>
-=======
->>>>>>> 136072e8de660f078c0b426f93922e8fa4fa1edd
         </plugins>
     </build>
 </project>
